@@ -1,0 +1,259 @@
+# /**
+#  * Copyright (c) Connexta
+#  *
+#  * <p>This is free software: you can redistribute it and/or modify it under the terms of the GNU
+#  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
+#  * the License, or any later version.
+#  *
+#  * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  * GNU Lesser General Public License for more details. A copy of the GNU Lesser General Public
+#  * License is distributed along with this program and can be found at
+#  * <http://www.gnu.org/licenses/lgpl.html>.
+#  */
+openapi: 3.0.2
+
+info:
+  version: ${project.version}
+  title: ${project.name}
+  description: >
+    The discovery API is defined to allow automatic registration of remote systems with Ion and
+    to provide periodic notifications (a.k.a. heartbeats) of the system's presence and
+    availability.
+  contact:
+    name: Connexta
+  license:
+    name: GNU Lesser General Public License
+    url: 'http://www.gnu.org/licenses/lgpl.html'
+
+servers:
+  - url: https://ion.cloud:1234
+
+paths:
+  /register:
+    parameters:
+      - $ref: '#/components/parameters/AcceptVersion'
+      - $ref: '#/components/parameters/Echo'
+    post:
+      summary: Register a remote system.
+      description: >
+        Endpoint capable of registering remote systems.
+      tags:
+        - external
+      operationId: register
+      requestBody:
+        $ref: '#/components/requestBodies/SystemPresence'
+      responses:
+        '308': # Permanent Redirect
+          description: >
+            The system was registered or was already registered and the resource has permanently
+            moved to the specified location. The message should be re-issued to the specified
+            location.
+          headers:
+            'Content-Version':
+              $ref: '#/components/headers/ContentVersion'
+            'Location':
+              $ref: '#/components/headers/HeartbeatLocation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  /heartbeat/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AcceptVersion'
+      - name: id
+        in: path
+        description: Ion's unique identifier for the system reporting its presence.
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+    post:
+      summary: Heartbeat notification from a remote system.
+      description: >
+        Protected endpoint capable of periodically receiving a remote system presence. Clients will
+        be redirected to this endpoint after having first registered themselves via the `/register`
+        endpoint.
+      tags:
+        - internal
+      operationId: heartbeat
+      requestBody:
+        $ref: '#/components/requestBodies/SystemPresence'
+      responses:
+        '204':
+          description: The system's information was updated
+          headers:
+            'Content-Version':
+              $ref: '#/components/headers/ContentVersion'
+        '307':
+          description: >
+            The system is unknown to Ion and should be registered. The message should simply be
+            re-issued to the specified location
+          headers:
+            'Content-Version':
+              $ref: '#/components/headers/ContentVersion'
+            'Location':
+              $ref: '#/components/headers/RegisterLocation'
+
+components:
+  parameters:
+    AcceptVersion:
+      in: header
+      name: Accept-Version
+      description: >
+        The API version used by the client to produce the REST message. The client will accept
+        responses marked with any minor versions after this one. It does imply that all future
+        minor versions of the message are backward compatible with all previous minor versions
+        of the same message.
+      required: true
+      schema:
+        $ref: '#/components/schemas/Version'
+      examples:
+        major.minor:
+          value: '1.2'
+          summary: A released minor version
+        major.minor.patch:
+          value: '1.0.3'
+          summary: A patched version
+        dev:
+          value: '1.2.0-SNAPSHOT'
+          summary: A development version
+    Echo:
+      in: header
+      name: Echo
+      description: >
+        A boolean flag indicating that the server should echo back in the response under a
+        property named *echo.request*, the properties from the request it understood and used.
+        It should also include the default value of any optional properties not specified.
+        This should only be used during contract testing to ensure the right property names
+        are being specified and to ensure the proper default values are being used by the
+        server.
+      required: false
+      schema:
+        type: boolean
+
+  headers:
+    ContentVersion:
+      description: >
+        The API version used by the server to produce the REST message. The server will accept
+        messages for any minor versions prior to this one.
+      required: true
+      schema:
+        $ref: '#/components/schemas/Version'
+      examples:
+        major.minor:
+          value: '1.2'
+          summary: A released minor version
+        major.minor.patch:
+          value: '1.0.3'
+          summary: A patched version
+        dev:
+          value: '1.2.0-SNAPSHOT'
+          summary: A development version
+    HeartbeatLocation:
+      description: >
+        The new permanent location where the system should report its presence.
+      required: true
+      schema:
+        type: string
+      example: https://ion.cloud/heartbeat/abc123df003
+    RegisterLocation:
+      description: >
+        The location where the system should re-register itself.
+      required: true
+      schema:
+        type: string
+      example: https://ion.cloud/register
+
+  requestBodies:
+    SystemPresence:
+      description: >
+        Remote system presence information.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/System'
+
+  responses:
+    Unauthorized:
+      description: >
+        The client could not be authenticated.
+      headers:
+        'Content-Version':
+          $ref: '#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseMessage'
+    NotImplemented:
+      description: >
+        The requested API version is not supported and therefore not implemented.
+      headers:
+        'Content-Version':
+          $ref: '#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseMessage'
+    BadRequest:
+      description: >
+        The client message could not understood by the server due to invalid format or syntax.
+      headers:
+        'Content-Version':
+          $ref: '#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseMessage'
+    DefaultError:
+      description: >
+        Any other possible errors not currently known.
+      headers:
+        'Content-Version':
+          $ref: '#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseMessage'
+
+  schemas:
+    Identifier:
+      description: Unique Ion identifier for a system.
+      type: string
+      format: uuid
+    Version:
+      description: Version number.
+      type: string
+      minLength: 3
+      pattern: '^([1-9]([0-9]+)?)\.(0|([1-9]([0-9]+)?))(\.(0|([1-9]([0-9]+)?))(-.*)?)?$'
+    System:
+      description: Information about a system.
+      type: object
+      required:
+        - remoteId
+      properties:
+        remoteId:
+          type: string
+          description: >
+            A system advertised identifier that is meant to uniquely identify the system. The
+            identifier is not guaranteed to be unique from Ion's perspective which might be
+            forced to use other properties to uniquely identify the system registering. This
+            identifier is typically generated differently based on the advertised product and/or
+            version.
+          minLength: 1
+          example: abcd-01234-xxxx
+    ResponseMessage:
+      description: Message information.
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: >
+            Detailed information about the response or error.
+          minLength: 1
