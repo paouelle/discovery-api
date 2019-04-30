@@ -18,8 +18,7 @@ info:
   title: ${project.name}
   description: >
     The discovery API is defined to allow automatic registration of remote systems with Ion and
-    to provide periodic notifications (a.k.a. heartbeats) of the system's presence and
-    availability.
+    to provide periodic notifications (a.k.a. heartbeats) of the system's presence and availability.
   contact:
     name: Connexta
   license:
@@ -27,233 +26,189 @@ info:
     url: 'http://www.gnu.org/licenses/lgpl.html'
 
 servers:
-  - url: https://ion.cloud:1234
+  - url: ${rest.server.url}
 
 paths:
-  /register:
+  /heartbeat:
     parameters:
-      - $ref: '#/components/parameters/AcceptVersion'
-      - $ref: '#/components/parameters/Echo'
-    post:
-      summary: Register a remote system.
-      description: >
-        Endpoint capable of registering remote systems.
-      tags:
-        - external
-      operationId: register
-      requestBody:
-        $ref: '#/components/requestBodies/SystemPresence'
-      responses:
-        '308': # Permanent Redirect
-          description: >
-            The system was registered or was already registered and the resource has permanently
-            moved to the specified location. The message should be re-issued to the specified
-            location.
-          headers:
-            'Content-Version':
-              $ref: '#/components/headers/ContentVersion'
-            'Location':
-              $ref: '#/components/headers/HeartbeatLocation'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '501':
-          $ref: '#/components/responses/NotImplemented'
-        default:
-          $ref: '#/components/responses/DefaultError'
-  /heartbeat/{id}:
-    parameters:
-      - $ref: '#/components/parameters/AcceptVersion'
-      - name: id
-        in: path
-        description: Ion's unique identifier for the system reporting its presence.
-        required: true
-        schema:
-          $ref: '#/components/schemas/Identifier'
+      - $ref: 'commons.yaml#/components/parameters/AcceptVersion'
+      - $ref: 'commons.yaml#/components/parameters/Echo'
     post:
       summary: Heartbeat notification from a remote system.
       description: >
-        Protected endpoint capable of periodically receiving a remote system presence. Clients will
-        be redirected to this endpoint after having first registered themselves via the `/register`
-        endpoint.
-      tags:
-        - internal
+        Remote systems are expected to report their presence on a regular basis and whenever network
+        connectivity has been restored using this endpoint.
+
+        Clients may be redirected at the server's leisure. Typical successful response would be 204
+        as no content would be returned.
       operationId: heartbeat
+      tags:
+        - discovery
       requestBody:
-        $ref: '#/components/requestBodies/SystemPresence'
+        $ref: '#/components/requestBodies/Heartbeat'
       responses:
         '204':
-          description: The system's information was updated
-          headers:
-            'Content-Version':
-              $ref: '#/components/headers/ContentVersion'
+          $ref: '#/components/responses/NoContent'
+        '200':
+          $ref: '#/components/responses/OK'
         '307':
-          description: >
-            The system is unknown to Ion and should be registered. The message should simply be
-            re-issued to the specified location
-          headers:
-            'Content-Version':
-              $ref: '#/components/headers/ContentVersion'
-            'Location':
-              $ref: '#/components/headers/RegisterLocation'
+          $ref: '#/components/responses/TemporaryRedirect'
+        '308':
+          $ref: '#/components/responses/PermanentRedirect'
+        '400':
+          $ref: 'commons.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: 'commons.yaml#/components/responses/Unauthorized'
+        '501':
+          $ref: 'commons.yaml#/components/responses/NotImplemented'
+        default:
+          $ref: 'commons.yaml#/components/responses/DefaultError'
 
 components:
-  parameters:
-    AcceptVersion:
-      in: header
-      name: Accept-Version
-      description: >
-        The API version used by the client to produce the REST message. The client will accept
-        responses marked with any minor versions after this one. It does imply that all future
-        minor versions of the message are backward compatible with all previous minor versions
-        of the same message.
-      required: true
-      schema:
-        $ref: '#/components/schemas/Version'
-      examples:
-        major.minor:
-          value: '1.2'
-          summary: A released minor version
-        major.minor.patch:
-          value: '1.0.3'
-          summary: A patched version
-        dev:
-          value: '1.2.0-SNAPSHOT'
-          summary: A development version
-    Echo:
-      in: header
-      name: Echo
-      description: >
-        A boolean flag indicating that the server should echo back in the response under a
-        property named *echo.request*, the properties from the request it understood and used.
-        It should also include the default value of any optional properties not specified.
-        This should only be used during contract testing to ensure the right property names
-        are being specified and to ensure the proper default values are being used by the
-        server.
-      required: false
-      schema:
-        type: boolean
-
-  headers:
-    ContentVersion:
-      description: >
-        The API version used by the server to produce the REST message. The server will accept
-        messages for any minor versions prior to this one.
-      required: true
-      schema:
-        $ref: '#/components/schemas/Version'
-      examples:
-        major.minor:
-          value: '1.2'
-          summary: A released minor version
-        major.minor.patch:
-          value: '1.0.3'
-          summary: A patched version
-        dev:
-          value: '1.2.0-SNAPSHOT'
-          summary: A development version
-    HeartbeatLocation:
-      description: >
-        The new permanent location where the system should report its presence.
-      required: true
-      schema:
-        type: string
-      example: https://ion.cloud/heartbeat/abc123df003
-    RegisterLocation:
-      description: >
-        The location where the system should re-register itself.
-      required: true
-      schema:
-        type: string
-      example: https://ion.cloud/register
-
   requestBodies:
-    SystemPresence:
+    Heartbeat:
       description: >
         Remote system presence information.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/System'
-
+            $ref: '#/components/schemas/SystemInfo'
   responses:
-    Unauthorized:
-      description: >
-        The client could not be authenticated.
+    NoContent:
+      description: The system's information was accepted.
       headers:
         'Content-Version':
-          $ref: '#/components/headers/ContentVersion'
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+    OK:
+      description: >
+        The system's information was accepted. The only time a 200 response will be returned is
+        when echoing was requested by the client via the *Echo* request header.
+      headers:
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ResponseMessage'
-    NotImplemented:
+    TemporaryRedirect:
       description: >
-        The requested API version is not supported and therefore not implemented.
+        The heartbeat resource has temporarily moved to the specified location and the remote
+        system should re-issue the message right away to the specified location. All subsequent
+        heartbeat notifications should be sent to the original location.
       headers:
+        'Location':
+          $ref: '#/components/headers/Location'
         'Content-Version':
-          $ref: '#/components/headers/ContentVersion'
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ResponseMessage'
-    BadRequest:
+    PermanentRedirect:
       description: >
-        The client message could not understood by the server due to invalid format or syntax.
+        The heartbeat resource has permanently moved to the specified location and the remote
+        system should re-issue the message right away to the specified location. All subsequent
+        heartbeat notifications should be sent to the specified location.
       headers:
+        'Location':
+          $ref: '#/components/headers/Location'
         'Content-Version':
-          $ref: '#/components/headers/ContentVersion'
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ResponseMessage'
-    DefaultError:
+
+  headers:
+    Location:
       description: >
-        Any other possible errors not currently known.
-      headers:
-        'Content-Version':
-          $ref: '#/components/headers/ContentVersion'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ResponseMessage'
+        The new location where the remote system should report its presence.
+      required: true
+      schema:
+        type: string
+        format: uri
+      example: ${rest.server.url}/xyz
 
   schemas:
-    Identifier:
-      description: Unique Ion identifier for a system.
-      type: string
-      format: uuid
-    Version:
-      description: Version number.
-      type: string
-      minLength: 3
-      pattern: '^([1-9]([0-9]+)?)\.(0|([1-9]([0-9]+)?))(\.(0|([1-9]([0-9]+)?))(-.*)?)?$'
-    System:
+    ContactInfo:
+      description: Contact information about a system.
+      type: object
+      required:
+        - email
+      properties:
+        name:
+          type: string
+          description: >
+            The name of the contact person.
+          minLength: 1
+          example: Bob Patterson
+        email:
+          type: string
+          format: email
+          description: >
+            The email address for the contact person.
+          example: bob.patterson@acme.org
+    SystemInfo:
       description: Information about a system.
       type: object
       required:
-        - remoteId
+        - id
+        - name
+        - product
+        - version
+        - url
       properties:
-        remoteId:
+        id:
           type: string
           description: >
             A system advertised identifier that is meant to uniquely identify the system. The
-            identifier is not guaranteed to be unique from Ion's perspective which might be
-            forced to use other properties to uniquely identify the system registering. This
-            identifier is typically generated differently based on the advertised product and/or
-            version.
+            identifier is not guaranteed to be unique from Ion's perspective which might be forced
+            to use other properties to uniquely identify the system registering. This identifier is
+            typically generated differently based on the advertised product and/or version.
           minLength: 1
           example: abcd-01234-xxxx
-    ResponseMessage:
-      description: Message information.
-      type: object
-      required:
-        - message
-      properties:
-        message:
+        name:
           type: string
           description: >
-            Detailed information about the response or error.
+            The name of the remote system (a.k.a. site name). This name will be displayed to an
+            administrator when showing the remote system.
           minLength: 1
+          example: Acme Intelligence Node
+        organization:
+          type: string
+          description: >
+            The organization the remote system belongs to.
+          example: Acme Organization
+        contact:
+          $ref: '#/components/schemas/ContactInfo'
+        product:
+          type: string
+          description: >
+            The type of product the remote system is. This will help Ion determine how to
+            communicate and what functionalities are available.
+          minLength: 1
+          example: ddf, alliance, ...
+        version:
+          type: string
+          description: >
+            The version of the product installed on the remote system. This will help Ion
+            determine how to best communicate with the system.
+          minLength: 1
+          example: 4.6.9
+        url:
+          type: string
+          format: uri
+          description: >
+            An externally accessible url where the remote system is hosting REST services that can
+            can be reached. For DDF-based systems, this would be the base url for the CSW and
+            GraphQL endpoints.
+          example: https://myhost:8993/services
+    ResponseMessage:
+      description: >
+        Response message which can optionally includes the echoed parameters that were understood
+        from the original request.
+      type: object
+      properties:
+        echoed.parameters:
+          $ref: '#/components/schemas/SystemInfo'

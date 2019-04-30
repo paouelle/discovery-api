@@ -27,10 +27,9 @@
         <fileSet>
             <directory>${project.build.directory}/classes/openapi</directory>
             <outputDirectory></outputDirectory>
+            <excludes>
+                <exclude>openapi.yaml</exclude>
+            </excludes>
         </fileSet>
-        <!--        <fileSet>-->
-        <!--            <directory>${project.build.directory}/openapi</directory>-->
-        <!--            <outputDirectory></outputDirectory>-->
-        <!--        </fileSet>-->
     </fileSets>
 </assembly>

@@ -21,29 +21,43 @@
 
     <parent>
         <groupId>com.connexta.discovery</groupId>
-        <artifactId>discovery-api-rest-clients</artifactId>
+        <artifactId>discovery-api-rest</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <name>Discovery Rest-Assured Client</name>
+    <name>Ion Common Rest Models</name>
 
-    <groupId>com.connexta.discovery</groupId>
-    <artifactId>discovery-api-rest-assured-client</artifactId>
+    <groupId>com.connexta.ion</groupId>
+    <artifactId>common-rest-models</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <root.package>com.connexta.ion</root.package>
+        <rest.package>${root.package}.rest</rest.package>
+        <rest.models.package>${root.package}.rest.models</rest.models.package>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.connexta.discovery</groupId>
-            <artifactId>discovery-api-rest-specs</artifactId>
+            <groupId>com.connexta.ion</groupId>
+            <artifactId>common-rest-specs</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.connexta.discovery</groupId>
-            <artifactId>discovery-api-rest-models</artifactId>
-            <version>${project.version}</version>
+            <classifier>models</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>value</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -56,32 +70,17 @@
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
         </dependency>
+        <!-- uncomment and remove springfox-swagger2 when the generator finally support generating
+             io.swagger.v3.annotations -->
+        <!--        <dependency>-->
+        <!--            <groupId>io.swagger.core.v3</groupId>-->
+        <!--            <artifactId>swagger-core</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.gsonfire</groupId>
-            <artifactId>gson-fire</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okio</groupId>
-            <artifactId>okio</artifactId>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
         </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
@@ -100,7 +99,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>discovery-api-rest-specs</includeArtifactIds>
+                            <includeArtifactIds>common-rest-specs</includeArtifactIds>
                             <outputDirectory>${project.build.directory}/openapi</outputDirectory>
                             <overWriteSnapshots>true</overWriteSnapshots>
                         </configuration>
@@ -119,28 +118,26 @@
                         <configuration>
                             <inputSpec>${project.build.directory}/openapi/openapi.yaml
                             </inputSpec>
-                            <generatorName>java</generatorName>
+                            <generatorName>spring</generatorName>
                             <configOptions>
-                                <library>rest-assured</library>
                                 <java8>true</java8>
                                 <dateLibrary>java8</dateLibrary>
+                                <useTags>true</useTags>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useOptional>true</useOptional>
                                 <booleanGetterPrefix>is</booleanGetterPrefix>
                                 <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
+                                <sortParamsByRequiredFlag>true</sortParamsByRequiredFlag>
+                                <performBeanValidation>false</performBeanValidation>
                                 <sourceFolder>src/main/java</sourceFolder>
                             </configOptions>
                             <modelPackage>${rest.models.package}</modelPackage>
-                            <apiPackage>${rest.package}.restassured</apiPackage>
-                            <invokerPackage>${rest.package}.restassured.invoker</invokerPackage>
-                            <generateApis>true</generateApis>
-                            <generateApiDocumentation>true</generateApiDocumentation>
+                            <generateApis>false</generateApis>
                             <generateApiTests>false</generateApiTests>
-                            <generateModels>false</generateModels>
+                            <generateModels>true</generateModels>
+                            <generateModelDocumentation>true</generateModelDocumentation>
                             <generateModelTests>false</generateModelTests>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <supportingFilesToGenerate>
-                                ApiClient.java,JSON.java,GsonObjectMapper.java
-                            </supportingFilesToGenerate>
+                            <generateSupportingFiles>false</generateSupportingFiles>
                         </configuration>
                     </execution>
                 </executions>

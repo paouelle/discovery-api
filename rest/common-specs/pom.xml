@@ -25,43 +25,21 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <name>Discovery Rest Open API Specification</name>
+    <name>Ion Common Rest Open API Specification</name>
 
-    <groupId>com.connexta.discovery</groupId>
-    <artifactId>discovery-api-rest-specs</artifactId>
+    <groupId>com.connexta.ion</groupId>
+    <artifactId>common-rest-specs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.connexta.ion</groupId>
-            <artifactId>common-rest-specs</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-    </dependencies>
+    <properties>
+        <root.package>com.connexta.ion</root.package>
+        <rest.package>${root.package}.rest</rest.package>
+        <rest.models.package>${root.package}.rest.models</rest.models.package>
+    </properties>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-openapi-specs</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>common-rest-specs</includeArtifactIds>
-                            <outputDirectory>${project.build.directory}/classes/openapi
-                            </outputDirectory>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -107,6 +85,22 @@
                                 <descriptor>src/assembly/specs.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>specs-for-models</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archiverConfig>
+                                <duplicateBehavior>skip</duplicateBehavior>
+                            </archiverConfig>
+                            <descriptors>
+                                <descriptor>src/assembly/specs-for-models.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>true</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>

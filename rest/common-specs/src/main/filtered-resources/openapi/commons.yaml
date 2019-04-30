@@ -1,0 +1,224 @@
+# /**
+#  * Copyright (c) Connexta
+#  *
+#  * <p>This is free software: you can redistribute it and/or modify it under the terms of the GNU
+#  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
+#  * the License, or any later version.
+#  *
+#  * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  * GNU Lesser General Public License for more details. A copy of the GNU Lesser General Public
+#  * License is distributed along with this program and can be found at
+#  * <http://www.gnu.org/licenses/lgpl.html>.
+#  */
+openapi: 3.0.2
+
+info:
+  version: ${project.version}
+  title: ${project.name}
+  description: >
+    A sample API that enables us to define common models and specification elements that can be
+    reuse in other APIs/
+  contact:
+    name: Connexta
+  license:
+    name: GNU Lesser General Public License
+    url: 'http://www.gnu.org/licenses/lgpl.html'
+
+servers:
+  - url: ${rest.server.url}
+
+paths:
+  /sample:
+    parameters:
+      - $ref: 'commons.yaml#/components/parameters/AcceptVersion'
+      - $ref: 'commons.yaml#/components/parameters/Echo'
+    post:
+      summary: Sample endpoint.
+      description: >
+        Sample endpoint.
+      operationId: sample
+      tags:
+        - sample
+      responses:
+        '200':
+          $ref: 'commons.yaml#/components/responses/OK'
+        '307':
+          $ref: 'commons.yaml#/components/responses/TemporaryRedirect'
+        '308':
+          $ref: 'commons.yaml#/components/responses/PermanentRedirect'
+        '400':
+          $ref: 'commons.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: 'commons.yaml#/components/responses/Unauthorized'
+        '501':
+          $ref: 'commons.yaml#/components/responses/NotImplemented'
+        default:
+          $ref: 'commons.yaml#/components/responses/DefaultError'
+
+components:
+  responses:
+    OK:
+      description: >
+        Sample successful response.
+      headers:
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+    TemporaryRedirect:
+      description: >
+        Sample redirect response.
+      headers:
+        'Location':
+          $ref: 'commons.yaml#/components/headers/Location'
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+    PermanentRedirect:
+      description: Sample redirect response.
+      headers:
+        'Location':
+          $ref: 'commons.yaml#/components/headers/Location'
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+    Unauthorized:
+      description: >
+        The client could not be authenticated.
+      headers:
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: 'commons.yaml#/components/schemas/ErrorMessage'
+    NotImplemented:
+      description: >
+        The requested API version is not supported and therefore not implemented.
+      headers:
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: 'commons.yaml#/components/schemas/ErrorMessage'
+    BadRequest:
+      description: >
+        The client message could not understood by the server due to invalid format or syntax.
+      headers:
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: 'commons.yaml#/components/schemas/ErrorMessage'
+    DefaultError:
+      description: >
+        Any other possible errors not currently known.
+      headers:
+        'Content-Version':
+          $ref: 'commons.yaml#/components/headers/ContentVersion'
+      content:
+        application/json:
+          schema:
+            $ref: 'commons.yaml#/components/schemas/ErrorMessage'
+
+  parameters:
+    AcceptVersion:
+      in: header
+      name: Accept-Version
+      description: >
+        The API version used by the client to produce the REST message. The client will accept
+        responses marked with any minor versions after this one. It does imply that all future
+        minor versions of the message are backward compatible with all previous minor versions of
+        the same message.
+      required: true
+      schema:
+        $ref: 'commons.yaml#/components/schemas/Version'
+      examples:
+        major.minor:
+          value: '1.2'
+          summary: A released minor version
+        major.minor.patch:
+          value: '1.0.3'
+          summary: A patched version
+        dev:
+          value: '1.2.0-SNAPSHOT'
+          summary: A development version
+    Echo:
+      in: header
+      name: Echo
+      description: >
+        A boolean flag indicating that the server should echo back in the response under a
+        property named *echoed.parameters*, the parameters from the request it understood and used.
+        It should also include the default value of any optional parameters (and properties) not
+        specified. This should only be used during contract testing to ensure the right parameter
+        (and property) names are being specified and to ensure the proper default values are being
+        used by the server.
+      required: false
+      schema:
+        type: boolean
+        default: false
+
+  headers:
+    ContentVersion:
+      description: >
+        The API version used by the server to produce the REST message. The server will accept
+        messages for any minor versions prior to this one.
+      required: true
+      schema:
+        $ref: 'commons.yaml#/components/schemas/Version'
+      examples:
+        major.minor:
+          value: '1.2'
+          summary: A released minor version
+        major.minor.patch:
+          value: '1.0.3'
+          summary: A patched version
+        dev:
+          value: '1.2.0-SNAPSHOT'
+          summary: A development version
+    Location:
+      description: >
+        A new location where the request should be re-issued.
+      required: true
+      schema:
+        type: string
+        format: uri
+      example: ${rest.server.url}/xyz
+
+  schemas:
+    Version:
+      description: Version number.
+      type: string
+      minLength: 3
+      pattern: '^([1-9]([0-9]+)?)\.(0|([1-9]([0-9]+)?))(\.(0|([1-9]([0-9]+)?))(-.*)?)?$'
+      example: 1.2, 2.4.3, 0.2.5-SNAPSHOT
+    ErrorMessage:
+      description: Error message information.
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: The corresponding HTTP status code.
+          example: 200
+        code:
+          type: integer
+          format: int32
+          description: >
+            An optional more specific code corresponding to the error (specific codes need to be
+            documented).
+        message:
+          type: string
+          description: Information about the error.
+          minLength: 1
+        details:
+          type: array
+          items:
+            type: string
+          description: Optional detailed information about the error.
+        path:
+          type: string
+          description: The path for the REST request that generated this error.
+          example: /path
