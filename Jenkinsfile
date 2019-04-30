@@ -25,7 +25,7 @@ pipeline {
     parameters {
             booleanParam(name: 'RELEASE', defaultValue: false, description: 'Perform Release?')
             string(name: 'RELEASE_VERSION', defaultValue: 'NA', description: 'The version to release. An NA value will release the current version')
-            string(name: 'RELEASE_TAG', defaultValue: 'NA', description: "The release tag for this version. An NA value will result in ${env.GITHUB_REPONAME}-RELEASE_VERSION")
+            string(name: 'RELEASE_TAG', defaultValue: 'NA', description: 'The release tag for this version. An NA value will result in <repository-name>-RELEASE_VERSION")
             string(name: 'NEXT_VERSION', defaultValue: 'NA', description: 'The next development version. An NA value will increment the patch version')
     }
     options {
