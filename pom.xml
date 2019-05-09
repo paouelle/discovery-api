@@ -32,7 +32,7 @@
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -107,7 +107,7 @@
         <url>https://github.com/connexta/discovery-api</url>
         <connection>scm:git:https://github.com/connexta/discovery-api.git</connection>
         <developerConnection>scm:git:https://github.com/connexta/discovery-api.git</developerConnection>
-        <tag>discovery-api-1.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
     
     <distributionManagement>

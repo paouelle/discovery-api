@@ -20,14 +20,14 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api-rest</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <name>Discovery Rest Open API Specification</name>
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api-rest-specs</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <build>

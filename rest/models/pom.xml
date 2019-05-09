@@ -20,14 +20,14 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api-rest</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <name>Discovery Rest Models</name>
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api-rest-models</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
