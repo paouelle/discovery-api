@@ -167,7 +167,7 @@ pipeline {
                     sh "git checkout ${env.RELEASE_COMMIT}"
 
                     //sshagent doesn't seem to work in multi-branch pipelines so the following hack is needed
-                    sh 'git remote add ssh-origin git@github.com:connexta/${env.GITHUB_REPONAME}.git'
+                    sh "git remote add ssh-origin git@github.com:connexta/${env.GITHUB_REPONAME}.git"
                     withCredentials([sshUserPrivateKey(credentialsId: '${env.GITHUB_KEY}', keyFileVariable: 'GITHUB_KEY')]) {
                         sh 'echo ssh -i $GITHUB_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > run_ssh.sh'
                         sh 'chmod +x run_ssh.sh'
