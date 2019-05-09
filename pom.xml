@@ -105,6 +105,13 @@
         <gib.failOnError>false</gib.failOnError>
     </properties>
 
+    <scm>
+        <url>https://github.com/connexta/discovery-api</url>
+        <connection>scm:git:https://github.com/connexta/discovery-api.git</connection>
+        <developerConnection>scm:git:https://github.com/connexta/discovery-api.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
     <distributionManagement>
         <!--
         NOTE: The properties snapshots.repository.url and releases.repository.url should be defined in your .m2/settings.xml file.
