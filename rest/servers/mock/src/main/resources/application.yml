@@ -1,0 +1,40 @@
+#/**
+#  * Copyright (c) Connexta
+#  *
+#  * <p>This is free software: you can redistribute it and/or modify it under the terms of the GNU
+#  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
+#  * the License, or any later version.
+#  *
+#  * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  * GNU Lesser General Public License for more details. A copy of the GNU Lesser General Public
+#  * License is distributed along with this program and can be found at
+#  * <http://www.gnu.org/licenses/lgpl.html>.
+#  */
+
+# Spring application yaml configuration file.
+# Any of these configurations can be overridden using environment variables or system properties.
+# See https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
+
+# Application configurations
+spring:
+  application:
+    name: Discovery App
+
+# Server configuration
+server:
+  port: 8080
+
+# App metrics and management configuration
+# See https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-metrics
+# for more information.
+management:
+  metrics:
+    export:
+      jmx:
+        enabled: true
+  endpoints:
+    enabled-by-default: true
+
+logging.level.root: INFO
+logging.level.com.connexta: DEBUG

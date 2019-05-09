@@ -22,17 +22,19 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api-rest</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <name>Discovery Rest Servers</name>
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api-rest-servers</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
+        <module>spring</module>
         <module>spring-boot</module>
+        <module>mock</module>
     </modules>
 </project>

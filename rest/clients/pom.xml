@@ -22,17 +22,18 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api-rest</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <name>Discovery Rest Clients</name>
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api-rest-clients</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>rest-assured</module>
+        <module>cxf</module>
     </modules>
 </project>

@@ -22,14 +22,14 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api-rest-servers</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <name>Discovery Rest Spring Boot Server Stubs</name>
+    <name>Discovery Rest Spring Boot Application</name>
 
     <groupId>com.connexta.discovery</groupId>
-    <artifactId>discovery-api-rest-spring-boot-server</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>discovery-api-rest-spring-boot</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -37,6 +37,16 @@
             <artifactId>discovery-api-rest-specs</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>com.connexta.discovery</groupId>
+            <artifactId>discovery-api-rest-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.connexta.discovery</groupId>
+            <artifactId>discovery-api-rest-spring-stubs</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -50,10 +60,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -90,6 +96,10 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -120,36 +130,36 @@
                             <inputSpec>${project.build.directory}/openapi/openapi.yaml
                             </inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>${root.package}.stub</apiPackage>
                             <configOptions>
+                                <library>spring-boot</library>
                                 <java8>true</java8>
                                 <dateLibrary>java8</dateLibrary>
-                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <interfaceOnly>false</interfaceOnly>
                                 <useOptional>true</useOptional>
                                 <booleanGetterPrefix>is</booleanGetterPrefix>
+                                <sortParamsByRequiredFlag>true</sortParamsByRequiredFlag>
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
+                                <sourceFolder>src/main/java</sourceFolder>
                             </configOptions>
-                            <generateApis>true</generateApis>
-                            <generateApiDocumentation>true</generateApiDocumentation>
-                            <generateApiTests>false</generateApiTests>
-                            <modelPackage>${root.package}.model</modelPackage>
-                            <generateModels>true</generateModels>
-                            <generateModelDocumentation>true</generateModelDocumentation>
-                            <generateModelTests>false</generateModelTests>
+                            <modelPackage>${rest.models.package}</modelPackage>
+                            <apiPackage>${rest.package}.spring</apiPackage>
+                            <invokerPackage>${rest.package}.spring.app</invokerPackage>
+                            <generateApis>false</generateApis>
+                            <generateModels>false</generateModels>
                             <generateSupportingFiles>true</generateSupportingFiles>
-                            <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

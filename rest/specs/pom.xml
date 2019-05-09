@@ -22,14 +22,14 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api-rest</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <name>Discovery Rest Open API Specification</name>
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api-rest-specs</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <build>
@@ -47,7 +47,6 @@
                             <inputSpec>${project.build.directory}/classes/openapi/openapi.yaml
                             </inputSpec>
                             <!-- Need to select a generator for the validation to be performed -->
-                            <!--                            <generatorName>html2</generatorName>-->
                             <generatorName>openapi-yaml</generatorName>
                             <!-- Turn off as much of the code generation as possible
                                  since we're only trying to validate the API -->

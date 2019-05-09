@@ -22,20 +22,28 @@
     <parent>
         <groupId>com.connexta.discovery</groupId>
         <artifactId>discovery-api</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <name>Discovery Rest API</name>
 
     <groupId>com.connexta.discovery</groupId>
     <artifactId>discovery-api-rest</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <rest.server.url>https://ion.dod.mil/heartbeat</rest.server.url>
+        <rest.package>${root.package}.rest</rest.package>
+        <rest.models.package>${root.package}.rest.models</rest.models.package>
+    </properties>
 
     <modules>
         <module>specs</module>
         <module>docs</module>
-        <module>clients</module>
+        <module>models</module>
+        <module>interceptors</module>
         <module>servers</module>
+        <module>clients</module>
     </modules>
 </project>
