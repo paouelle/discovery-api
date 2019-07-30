@@ -15,7 +15,7 @@ openapi: 3.0.2
 
 info:
   version: ${project.version}
-  title: ${project.name}
+  title: Discovery API Specification
   description: >
     The discovery API is defined to allow automatic registration of remote systems with Ion and
     to provide periodic notifications (a.k.a. heartbeats) of the system's presence and availability.
@@ -67,8 +67,7 @@ paths:
 components:
   requestBodies:
     Heartbeat:
-      description: >
-        Remote system presence information.
+      description: Remote system presence information.
       required: true
       content:
         application/json:
@@ -120,8 +119,7 @@ components:
           schema:
             $ref: '#/components/schemas/ResponseMessage'
     Unauthorized:
-      description: >
-        The client could not be authenticated.
+      description: The client could not be authenticated.
       headers:
         'Content-Version':
           $ref: '#/components/headers/ContentVersion'
@@ -159,8 +157,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorMessage'
     DefaultError:
-      description: >
-        Any other possible errors not currently known.
+      description: Any other possible errors not currently known.
       headers:
         'Content-Version':
           $ref: '#/components/headers/ContentVersion'
@@ -225,8 +222,7 @@ components:
           value: '1.2.0-SNAPSHOT'
           summary: A development version
     Location:
-      description: >
-        The new location where the remote system should report its presence.
+      description: The new location where the remote system should report its presence.
       required: true
       schema:
         type: string
@@ -238,6 +234,7 @@ components:
       description: Version number.
       type: string
       minLength: 3
+      maxLength: 80
       pattern: '^([1-9]([0-9]+)?)\.(0|([1-9]([0-9]+)?))(\.(0|([1-9]([0-9]+)?))(-.*)?)?$'
       example: 1.2, 2.4.3, 0.2.5-SNAPSHOT
     ContactInfo:
@@ -248,15 +245,16 @@ components:
       properties:
         name:
           type: string
-          description: >
-            The name of the contact person.
+          description: The name of the contact person.
           minLength: 1
+          maxLength: 255
           example: Bob Patterson
         email:
           type: string
           format: email
-          description: >
-            The email address for the contact person.
+          description: The email address for the contact person.
+          minLength: 1
+          maxLength: 255
           example: bob.patterson@acme.org
     SystemInfo:
       description: Information about a system.
@@ -276,6 +274,7 @@ components:
             to use other properties to uniquely identify the system registering. This identifier is
             typically generated differently based on the advertised product and/or version.
           minLength: 1
+          maxLength: 80
           example: abcd-01234-xxxx
         name:
           type: string
@@ -283,11 +282,13 @@ components:
             The name of the remote system (a.k.a. site name). This name will be displayed to an
             administrator when showing the remote system.
           minLength: 1
+          maxLength: 255
           example: Acme Intelligence Node
         organization:
           type: string
-          description: >
-            The organization the remote system belongs to.
+          description: The organization the remote system belongs to.
+          minLength: 1
+          maxLength: 255
           example: Acme Organization
         contact:
           $ref: '#/components/schemas/ContactInfo'
@@ -297,6 +298,7 @@ components:
             The type of product the remote system is. This will help Ion determine how to
             communicate and what functionalities are available.
           minLength: 1
+          maxLength: 20
           example: ddf, alliance, ...
         version:
           type: string
@@ -304,6 +306,7 @@ components:
             The version of the product installed on the remote system. This will help Ion
             determine how to best communicate with the system.
           minLength: 1
+          maxLength: 80
           example: 4.6.9
         url:
           type: string
@@ -312,6 +315,8 @@ components:
             An externally accessible url where the remote system is hosting REST services that can
             can be reached. For DDF-based systems, this would be the base url for the CSW and
             GraphQL endpoints.
+          minLength: 1
+          maxLength: 2083
           example: https://myhost:8993/services
     ResponseMessage:
       description: >
@@ -335,10 +340,14 @@ components:
           type: string
           format: date-time
           description: The server time when the error was generated.
+          minLength: 1
+          maxLength: 28
           example: 2019-05-09T14:47:13.101+0000
         path:
           type: string
           description: The path for the REST endpoint that generated this error.
+          minLength: 1
+          maxLength: 2048
           example: /heartbeat
         status:
           type: integer
