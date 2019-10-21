@@ -54,6 +54,15 @@ public class TestClient {
   private static final String CLIENT_VERSION = VersionInterceptor.getVersion(DiscoveryApi.class);
   private static final int MAJOR_VERSION;
   private static final int MINOR_VERSION;
+  private static final URI URI;
+
+  static {
+    try {
+      URI = new URI("https://localhost/uri");
+    } catch (URISyntaxException e) {
+      throw new AssertionError(e);
+    }
+  }
 
   private static int port = -1;
   private static ConfigurableApplicationContext context = null;
@@ -101,7 +110,7 @@ public class TestClient {
           .contact(new ContactInfo().email("myemail@myorg.com").name("my name"))
           .product("my product")
           .version("my version")
-          .url("my url");
+          .url(TestClient.URI);
 
   public TestClient() {
     this.baseUrl = "http://localhost:" + TestClient.port + "/";

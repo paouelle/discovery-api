@@ -14,7 +14,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -62,6 +64,11 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-bean-validators</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -69,6 +76,19 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <deleteStubsAfterTest>false</deleteStubsAfterTest>
+                    <!--                    <packageWithBaseClasses>com.connexta.discovery.rest.springboot.mock.controller-->
+                    <!--                    </packageWithBaseClasses>-->
+                    <baseClassForTests>
+                        com.connexta.discovery.rest.springboot.mock.controller.DiscoveryControllerBase
+                    </baseClassForTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

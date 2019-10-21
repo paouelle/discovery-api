@@ -315,8 +315,6 @@ components:
             An externally accessible url where the remote system is hosting REST services that can
             can be reached. For DDF-based systems, this would be the base url for the CSW and
             GraphQL endpoints.
-          minLength: 1
-          maxLength: 2083
           example: https://myhost:8993/services
     ResponseMessage:
       description: >
